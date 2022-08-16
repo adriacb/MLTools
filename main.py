@@ -3,7 +3,7 @@ from utils import *
 from ann import Autoencoder
 
 def read_data():
-    df = pd.read_csv('/home/adria/Downloads/BBBP.csv')
+    df = pd.read_csv('/home/acabello/Downloads/BBBP.csv')
     #df['mol'] = df['smiles'].progress_apply(lambda x: Chem.MolFromSmiles(x, sanitize=True))
     from sklearn.utils import resample
     # Separate majority and minority classes
@@ -44,9 +44,36 @@ def read_data():
                         & (df['NumHDonors'] <= 2)\
                         & (df['NumAromaticRings'] <= 3)\
                         & (df['PFI'] <= 5)
+    
+    df['NumHAcceptors'] = df['mol'].apply(lambda x: Chem.Lipinski.NumHAcceptors(x))
+    df['NumRadicalElectrons'] = df['mol'].apply(lambda x: Descriptors.NumRadicalElectrons(x))
+    df['NumValenceElectrons'] = df['mol'].apply(lambda x: Descriptors.NumValenceElectrons(x))
+    df['HeavyAtomMolWt'] = df['mol'].apply(lambda x:Descriptors.HeavyAtomMolWt(x))
+    df['MaxAbsPartialCharge'] = df['mol'].apply(lambda x: Descriptors.MaxAbsPartialCharge(x))
+    df['MinAbsPartialCharge'] = df['mol'].apply(lambda x: Descriptors.MinAbsPartialCharge(x))
+    df['fraCSP3'] = df['mol'].apply(lambda x: Chem.Lipinski.FractionCSP3(x))
 
+    df['NHOHCount'] = df['mol'].apply(lambda x: Chem.Lipinski.NHOHCount(x))
+    df['NOCount'] = df['mol'].apply(lambda x: Chem.Lipinski.NOCount(x))
+    df['NumAliphaticCarbocycles'] = df['mol'].apply(lambda x: Chem.Lipinski.NumAliphaticCarbocycles(x))
+    df['NumAliphaticHeterocycles'] = df['mol'].apply(lambda x: Chem.Lipinski.NumAliphaticHeterocycles(x))
+    df['NumAliphaticRings'] = df['mol'].apply(lambda x: Chem.Lipinski.NumAliphaticRings(x))
+    df['NumAromaticCarbocycles'] = df['mol'].apply(lambda x: Chem.Lipinski.NumAromaticCarbocycles(x))
+    df['NumAromaticHeterocycles'] = df['mol'].apply(lambda x: Chem.Lipinski.NumAromaticHeterocycles(x))
+    df['NumHeteroatoms'] = df['mol'].apply(lambda x: Chem.Lipinski.NumHeteroatoms(x))
+    df['NumSaturatedCarbocycles'] = df['mol'].apply(lambda x: Chem.Lipinski.NumSaturatedCarbocycles(x))
+    df['NumSaturatedHeterocycles'] = df['mol'].apply(lambda x: Chem.Lipinski.NumSaturatedHeterocycles(x))
+    df['NumSaturatedRings'] = df['mol'].apply(lambda x: Chem.Lipinski.NumSaturatedRings(x))
+    df['RingCount'] = df['mol'].apply(lambda x: Chem.Lipinski.RingCount(x))
+            
 
-    features = ['MolWt', 'LogP', 'NumHDonors', 'NumAromaticRings', 'PFI', 'p_np']
+    features = ['MolWt', 'LogP', 'NumHDonors', 'NumAromaticRings', 'PFI', 
+    'QueryProperties', 'NumHAcceptors', 'NumRadicalElectrons', 'NumValenceElectrons',
+    'HeavyAtomMolWt', 'MaxAbsPartialCharge', 'MinAbsPartialCharge', 'fraCSP3', 'NHOHCount',
+    'NOCount', 'NumAliphaticCarbocycles', 'NumAliphaticHeterocycles', 'NumAliphaticRings', 
+    'NumAromaticCarbocycles', 'NumAromaticHeterocycles', 'NumHeteroatoms', 'NumSaturatedCarbocycles', 
+    'NumSaturatedHeterocycles', 'NumSaturatedRings', 'RingCount',
+    'p_np']
     selected = df[features]
     selected = selected.loc[:,~selected.columns.duplicated()].copy()
 
@@ -57,13 +84,13 @@ def read_data():
 def main():
 
     selected = read_data()
-    items_features_fitted, p_items = prepareInput(selected)
+    items_features_fitted = prepareInput(selected)
     
 
     ac = Autoencoder(
                         input_dim=items_features_fitted.shape.as_list()[1], 
-                        hidden_dim_enc=[7, 500, 500, 2000],
-                        hidden_dim_dec=[2000, 500], 
+                        hidden_dim_enc=[25, 100, 500],
+                        hidden_dim_dec=[500, 100, 25], 
                         output_dim=3
                     )
 

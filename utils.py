@@ -147,6 +147,4 @@ def prepareInput(df: pd.DataFrame):
     items_features_dict = {name: np.array(value) for name, value in df.items()}
     items_features_fitted = preprocessing_layer(items_features_dict)
 
-    p_items = preprocessing_layer(items_features_dict)
-
-    return items_features_fitted, p_items
+    return items_features_fitted
