@@ -53,7 +53,7 @@ class Autoencoder:
             x = Dense(self.hidden_dim_enc, activation=self.activation, kernel_initializer=self.k_initializer)(self.input_df)
             encoded = Dense(self.output_dim, activation='relu')(x)
             x = Dense(self.hidden_dim_dec, activation=self.activation, kernel_initializer=self.k_initializer)(encoded)
-            decoded = Dense(self.input_dim, activation='relu')(x)
+            decoded = Dense(self.input_dim, activation='sigmoid')(x)
             
             autoencoder = keras.Model(self.input_df, decoded)
             encoder = keras.Model(self.input_df, encoded)

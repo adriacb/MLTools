@@ -4,6 +4,8 @@ import pickle
 import uuid
 import time
 
+import umap
+
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import rdDistGeom
@@ -27,6 +29,12 @@ from mpl_toolkits.mplot3d import Axes3D  # 3D plots
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans
 from sklearn import manifold
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.decomposition import PCA
+from sklearn import preprocessing
+
+from tensorflow.keras import models
 
 # TensorFlow and Keras
 import tensorflow as tf
@@ -148,3 +156,5 @@ def prepareInput(df: pd.DataFrame):
     items_features_fitted = preprocessing_layer(items_features_dict)
 
     return items_features_fitted
+
+
