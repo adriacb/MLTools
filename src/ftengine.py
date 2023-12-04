@@ -5,7 +5,7 @@ from sklearn.neighbors import NearestNeighbors, LocalOutlierFactor
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, MaxAbsScaler
 
 ########## Feature Engineering ############
-
+# https://medium.com/@sumitb2015/feature-engineering-introduction-7329ab770545
 ## Data Imputation
 
 def impute(df: pd.DataFrame, cols: list, type: str) -> pd.DataFrame:
@@ -31,6 +31,8 @@ def impute(df: pd.DataFrame, cols: list, type: str) -> pd.DataFrame:
     
 
 ## Categorical Features
+# TODO: https://towardsdatascience.com/categorical-feature-encoding-547707acf4e5
+
 def one_hot_encode(df: pd.DataFrame, cols: list) -> pd.DataFrame:
     """
     One-hot encodes the specified columns in the given DataFrame.
