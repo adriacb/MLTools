@@ -1,6 +1,6 @@
 
 from utils import *
-from ann import Autoencoder
+from sandbox.ann import Autoencoder
 
 def read_data():
     df = pd.read_csv('/home/acabello/Downloads/BBBP.csv')
