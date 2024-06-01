@@ -32,9 +32,15 @@ def plot_correlation(df, annotate = True):
     if the value is close to -1, the variables are negatively correlated
     
     """
+    df = df.select_dtypes(include=['number'])
+    # Check if there are non-numeric columns
+    if len(df.columns) < len(df.columns):
+        raise("Warning: Non-numeric columns were dropped for correlation calculation.")
+    
     ax = sns.heatmap(df.corr(), annot = annotate)
     bottom, top = ax.get_ylim()
     ax.set_ylim(bottom + 0.5, top - 0.5)
+    ax.set_title("Correlation plot")
     plt.show()
     
     
