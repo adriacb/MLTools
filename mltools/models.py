@@ -2,6 +2,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score
 
+
+
 class ClassificationComparer:
     def __init__(self):
         self.models = {}
@@ -20,7 +22,7 @@ class ClassificationComparer:
         self.models[name] = model
         self.hyperparams[name] = hyperparams
 
-    def tune_and_train(self, X, y, test_size=0.2, random_state=42):
+    def tune_and_train(self, X_train, X_test, y_train, y_test):
         """
         Tune hyperparameters and train the models.
         
@@ -30,7 +32,7 @@ class ClassificationComparer:
         - test_size: float, proportion of the dataset to include in the test split
         - random_state: int, seed used by the random number generator
         """
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+        #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
         
         for name in self.models:
             print(f"Training and tuning {name}...")

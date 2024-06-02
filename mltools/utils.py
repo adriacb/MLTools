@@ -263,7 +263,12 @@ def kdeplot_by_class(data, x, hue, xlabel='', ylabel='Density', title='', figsiz
     plt.show()
 
 
-def plot_categorical_grid(df, cols_per_row=3, figsize=(15, 10), max_categories_for_labels=10):
+def plot_categorical_grid(
+        df: pd.DataFrame, 
+        cols_per_row:int=3, 
+        figsize:tuple=(15, 10), 
+        max_categories_for_labels:int=10
+        ):
     """
     Plot a grid of categorical columns from a DataFrame.
 

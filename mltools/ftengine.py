@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+
+from typing import List, Dict, Any, Tuple
+
 from scipy.stats import median_abs_deviation
 from sklearn.neighbors import NearestNeighbors, LocalOutlierFactor
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, MaxAbsScaler
@@ -48,6 +51,32 @@ def one_hot_encode(df: pd.DataFrame, cols: list) -> pd.DataFrame:
         dummies = pd.get_dummies(df[each], prefix=each, drop_first=False)
         df = pd.concat([df, dummies], axis=1)
     return df
+
+def map_columns_to_numbers(
+    df: pd.DataFrame, columns: List[str]
+) -> Tuple[pd.DataFrame, Dict[str, Dict[Any, int]]]:
+    """
+    Maps unique elements in specified columns of a DataFrame to unique numbers.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame.
+    columns (List[str]): A list of column names to be mapped.
+
+    Returns:
+    Tuple[pd.DataFrame, Dict[str, Dict[Any, int]]]: 
+        - The DataFrame with specified columns mapped to numbers.
+        - A dictionary containing the mapping for each column.
+    """
+    mappings = {}
+    for column in columns:
+        unique_elements = df[column].unique()
+        mapping = {number: element for number, element in enumerate(unique_elements)}
+        reverse_mapping = {element: number for number, element in enumerate(unique_elements)}
+        df[column] = df[column].map(reverse_mapping)
+        mappings[column] = mapping
+    return df, mappings
+
+
 
 ## Outlier Detection
 def z_score_outliers(df: pd.DataFrame, cols: list, threshold: float) -> pd.DataFrame:
@@ -244,3 +273,39 @@ def max_abs_scaling(df: pd.DataFrame, cols: list, drop_original: bool = True) ->
         if drop_original:
             df.drop(each, axis=1, inplace=True)
     return df
+
+from sklearn.impute import KNNImputer
+#https://www.kaggle.com/discussions/questions-and-answers/153147
+def KNN_imputation(df1:pd.DataFrame, cols:list[str], scaler=None) -> pd.DataFrame:
+    mappin:dict=dict()
+    
+    def find_category_mappings(df, variable):
+        return {k: i for i, k in enumerate(df[variable].dropna().unique(), 0)}
+
+    def integer_encode(df , variable, ordinal_mapping):
+        df[variable] = df[variable].map(ordinal_mapping)
+
+    df = df1.copy()
+    #Encoding dict &amp; Removing nan    
+    #mappin = dict()
+    for variable in cols:
+        mappings = find_category_mappings(df, variable)
+        mappin[variable] = mappings
+
+    #Apply mapping
+    for variable in cols:
+        integer_encode(df, variable, mappin[variable])  
+
+    #Minmaxscaler and KNN imputation 
+    sca = scaler.fit_transform(df)
+    knn_imputer = KNNImputer()
+    knn = knn_imputer.fit_transform(sca)
+    df.iloc[:,:] = scaler.inverse_transform(knn)
+    for i in df.columns : 
+        df[i] = round(df[i]).astype('int')
+
+    #Inverse transform
+    for i in cols:
+        inv_map = {v: k for k, v in mappin[i].items()}
+        df[i] = df[i].map(inv_map)
+    return df, mappin
